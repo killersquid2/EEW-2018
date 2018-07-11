@@ -10,7 +10,7 @@ def main():
         xbee_network = coord.get_network() #getting a newtwork and assigning it to the xbee
         router2 = xbee_network.discover_device('R3') # find the remote device on the network at R1
 
-        if router2 is None: # Comment here
+        if router2 is None:
             print("Could not find the remote device")
         else :
             print("Remote device found")
