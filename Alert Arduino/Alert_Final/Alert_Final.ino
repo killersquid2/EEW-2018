@@ -2,7 +2,6 @@
 #include <AltSoftSerial.h>
 
 AltSoftSerial SoftSerial;
-#define DebugSerial Serial
 #define XBeeSerial SoftSerial
 
 XBee xbee = XBee();
@@ -10,8 +9,8 @@ XBeeResponse response = XBeeResponse();
 ZBRxResponse rx = ZBRxResponse();
 ModemStatusResponse msr = ModemStatusResponse();
 
-int LedAlert = 12; // red led
-int LedSafe = 13; // green led
+int LedAlert = 0; // red led
+int LedSafe = 1; // green led
 int Buzzer = 10; 
 
 bool Safe;
@@ -27,7 +26,6 @@ void setup()
   pinMode(LedSafe, OUTPUT);
   pinMode(Buzzer, OUTPUT);
   
-  DebugSerial.begin(115200);
   XBeeSerial.begin(9600);
   xbee.begin(XBeeSerial);
 
@@ -44,7 +42,7 @@ void loop()
     if (xbee.getResponse().getApiId() == ZB_RX_RESPONSE)
     {
       xbee.getResponse().getZBRxResponse(rx);
-      if (rx.getOption() == ZB_PACKET_ACKNOWLEDGED)
+      /*if (rx.getOption() == ZB_PACKET_ACKNOWLEDGED)
       {
         DebugSerial.println("Packet received");
       }
@@ -55,7 +53,7 @@ void loop()
       for (int i=0; i<rx.getDataLength(); i++)
       {
         DebugSerial.print(char(rx.getData(i)));
-      }
+      }*/
       if (rx.getData(0) == 'T')
       {
         if (rx.getData(1) == '0')
@@ -65,17 +63,17 @@ void loop()
         
       }
       
-      DebugSerial.println();
+      //DebugSerial.println();
     }
     else if (xbee.getResponse().getApiId() == MODEM_STATUS_RESPONSE)
     {
       xbee.getResponse().getModemStatusResponse(msr);
     }
   }
-  else if (xbee.getResponse().isError())
+  /*else if (xbee.getResponse().isError())
   {
     DebugSerial.println("Error reading packet.");
-  }
+  }*/
 
   
    if (Safe == true)
