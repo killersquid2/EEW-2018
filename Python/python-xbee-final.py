@@ -24,7 +24,7 @@ def main():
 
                 # Temperature
                 print("At {0} Temperature is {1}".format(timestamp, data[0]), end=": ")
-                if data[0] > 23.7:
+                if data[0] > 24.65:
                     print("Unsafe")
                     if router2 is not None:
                         coord.send_data(router2, "T1")
