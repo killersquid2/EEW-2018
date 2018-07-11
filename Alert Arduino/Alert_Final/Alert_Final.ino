@@ -9,27 +9,30 @@ XBeeResponse response = XBeeResponse();
 ZBRxResponse rx = ZBRxResponse();
 ModemStatusResponse msr = ModemStatusResponse();
 
-int LedAlert = 0; // red led
-int LedSafe = 1; // green led
-int Buzzer = 10; 
+int LedAlertT = 0; // Red LED for Temperature 
+int LedSafeT = 1; // Green LED for Temperature
 
-bool Safe;
+int LedAlertH = 5; // Red LED for Humidity
+int LedSafeH = 6; // Green LED for Humidity
+
+int Buzzer = 10; // Buzzer
+
+bool SafeT; // Whether Temperature at Safe Levels
+bool SafeH; // Whether Humidity at Safe Levels
 
 
 void setup()
 {
   // put your setup code here, to run once:
-
-
   
-  pinMode(LedAlert, OUTPUT);
-  pinMode(LedSafe, OUTPUT);
+  pinMode(LedAlertT, OUTPUT);
+  pinMode(LedSafeT, OUTPUT);
+  pinMode(LedAlertH, OUTPUT);
+  pinMode(LedSafeH, OUTPUT);
   pinMode(Buzzer, OUTPUT);
   
   XBeeSerial.begin(9600);
   xbee.begin(XBeeSerial);
-
-
 }
 
 void loop()
@@ -42,57 +45,80 @@ void loop()
     if (xbee.getResponse().getApiId() == ZB_RX_RESPONSE)
     {
       xbee.getResponse().getZBRxResponse(rx);
-      /*if (rx.getOption() == ZB_PACKET_ACKNOWLEDGED)
-      {
-        DebugSerial.println("Packet received");
-      }
-      else
-      {
-        DebugSerial.println("Packet received, but no acknowledgement");
-      }
-      for (int i=0; i<rx.getDataLength(); i++)
-      {
-        DebugSerial.print(char(rx.getData(i)));
-      }*/
+      
       if (rx.getData(0) == 'T')
       {
         if (rx.getData(1) == '0')
-        { Safe = true; }
+        { SafeT = true; }
         if (rx.getData(1) == '1')
-        { Safe = false; }
-        
+        { SafeT = false; }
       }
-      
-      //DebugSerial.println();
+      else if (rx.getData(0) == 'H')
+      {
+        if (rx.getData(1) == '0')
+        { SafeH = true; }
+        if (rx.getData(1) == '1')
+        { SafeH = false; }
+      }
     }
     else if (xbee.getResponse().getApiId() == MODEM_STATUS_RESPONSE)
     {
       xbee.getResponse().getModemStatusResponse(msr);
     }
   }
-  /*else if (xbee.getResponse().isError())
+   
+  if (SafeT == true)
   {
-    DebugSerial.println("Error reading packet.");
-  }*/
+    digitalWrite(LedSafeT, HIGH);
+    if (SafeH == true)
+    {
+      digitalWrite(LedSafeH, HIGH);
+      delay(200);
+    }
+    else
+    {
+      digitalWrite(LedSafeH, LOW);
+      digitalWrite(LedAlertH, HIGH);
+      play('B', 2);
+      digitalWrite(LedAlertH, LOW);
+      play('E', 2);
+    }
+  }
+  else
+  {
+    digitalWrite(LedSafeT, LOW);
+    digitalWrite(LedAlertT, HIGH);
+    if (SafeH == true)
+    {
+      digitalWrite(LedSafeH, HIGH);
+    }
+    else
+    {
+      digitalWrite(LedSafeH, LOW);
+      digitalWrite(LedAlertH, HIGH);
+    }
+    play('B', 2);
+    digitalWrite(LedAlertT, LOW);
+    digitalWrite(LedAlertH, LOW); 
+    play('E', 2);  
+  }
 
-  
-   if (Safe == true)
+/*   if (SafeH == true)
    {
-    digitalWrite(LedSafe, HIGH);
+    digitalWrite(LedSafeH, HIGH);
    }
-   if (Safe == false)
+   else
    {
-    digitalWrite(LedSafe, LOW);
-    digitalWrite(LedAlert, HIGH);  
+    digitalWrite(LedSafeH, LOW);
+    digitalWrite(LedAlertH, HIGH);  
     delay(50);              
-    digitalWrite(LedAlert, LOW);   
+    digitalWrite(LedAlertH, LOW);   
     delay(50);
 
-   play('B', 2);      
-   play('E', 2);      
-
+    play('B', 2);      
+    play('E', 2);      
    }
-   
+   */
  
 }
 
@@ -114,7 +140,7 @@ void play(char note, int beats) {
   //play the frequency that matched our letter for the number of beats passed to the play function
    tone(Buzzer, currentFrequency, beats * beatLength);   
    delay(beats* beatLength);   //wait for the length of the tone so that it has time to play
-   delay(50);   //a little delay between the notes makes the song sound more natural
+   delay(100);   //a little delay between the notes makes the song sound more natural
 }
 
 
