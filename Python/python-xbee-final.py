@@ -23,7 +23,7 @@ def main():
                 data = [float(element) for element in data_raw] # Turn each element of data_raw into a float
 
                 # Temperature
-                print("At {0} Temperature is {1}".format(timestamp, data[0]), end=": ")
+                print("\nAt {0} Temperature is {1}".format(timestamp, data[0]), end=": ")
                 if data[0] > 24.65:
                     print("Unsafe")
                     if router2 is not None:
@@ -33,6 +33,27 @@ def main():
                     if router2 is not None:
                         coord.send_data(router2, "T0")
 
+                # Pressure
+                print("At {0} Pressure is {1}".format(timestamp, data[1]), end=": ")
+                if data[1] > 1000:
+                    print("Unsafe")
+                    if router2 is not None:
+                        coord.send_data(router2, "P1")
+                else:
+                    print("Safe")
+                    if router2 is not None:
+                        coord.send_data(router2, "P0")
+                
+                # Humidity
+                print("At {0} Humidity is {1}".format(timestamp, data[2]), end=": ")
+                if data[2] > 90:
+                    print("Unsafe")
+                    if router2 is not None:
+                        coord.send_data(router2, "H1")
+                else:
+                    print("Safe")
+                    if router2 is not None:
+                        coord.send_data(router2, "H0")
     finally:
         if coord is not None and coord.is_open(): # Closes the communications to the coordinator when the program closes
             coord.close()
