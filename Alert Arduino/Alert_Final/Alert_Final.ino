@@ -27,8 +27,10 @@ void setup()
   
   pinMode(LedAlertT, OUTPUT);
   pinMode(LedSafeT, OUTPUT);
+  
   pinMode(LedAlertH, OUTPUT);
   pinMode(LedSafeH, OUTPUT);
+  
   pinMode(Buzzer, OUTPUT);
   
   XBeeSerial.begin(9600);
@@ -46,16 +48,16 @@ void loop()
     {
       xbee.getResponse().getZBRxResponse(rx);
       
-      if (rx.getData(0) == 'T' and rx.getData(2) == 'P' and rx.getData(4) == 'H')
+      if (rx.getData(0) == 'T' and rx.getData(2) == 'H')
       {
         if (rx.getData(1) == '0')
         { SafeT = true; }
         else if (rx.getData(1) == '1')
         { SafeT = false; }
         
-        if (rx.getData(5) == '0')
+        if (rx.getData(3) == '0')
         { SafeH = true; }
-        else if (rx.getData(5) == '1')
+        else if (rx.getData(3) == '1')
         { SafeH = false; }
       }
     }

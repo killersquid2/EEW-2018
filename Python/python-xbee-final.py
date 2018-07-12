@@ -35,7 +35,7 @@ def main():
                     dataToSend = ""
 
                     # Temperature
-                    print("\nAt {0} {1} Temperature is {1}".format(date, time_, data[0]), end=": ")
+                    print("\nAt {0} {1} Temperature is {2}".format(date, time_, data[0]), end=": ")
                     if data[0] > 24.65:
                         print("Unsafe")
                         dataToSend += "T1"
@@ -45,16 +45,16 @@ def main():
                         dataToSend += "T0"
                         stateT = "S"
 
-                    # Pressure
-                    print("At {0} {1} Pressure is {1}".format(date, time_, data[1]), end=": ")
-                    if data[1] > 1000:
-                        print("Unsafe")
-                        dataToSend += "P1"
-                        stateP = "U"
-                    else:
-                        print("Safe")
-                        dataToSend += "P0"
-                        stateP = "S"
+                    ## Pressure
+                    #print("At {0} {1} Pressure is {2}".format(date, time_, data[1]), end=": ")
+                    #if data[1] > 1000:
+                    #    print("Unsafe")
+                    #    dataToSend += "P1"
+                    #    stateP = "U"
+                    #else:
+                    #    print("Safe")
+                    #    dataToSend += "P0"
+                    #    stateP = "S"
                     
                     # Humidity
                     print("At {0} {1} Humidity is {2}".format(date, time_, data[2]), end=": ")
@@ -70,7 +70,7 @@ def main():
                     if router2 is not None:
                         coord.send_data(router2, dataToSend)
 
-                    text = "{0}\t{1}\t{2}\t{3}{4}\t\t{5}{6}\t{7}{8}\n".format(timestamp, date, time_, stateT, data[0], stateP, data[1], stateH, data[2])
+                    text = "{0}\t{1}\t{2}\t{3}{4}\t\t{5}{6}\n".format(timestamp, date, time_, stateT, data[0], stateH, data[2])
                     myFile.write(text)
     finally:
         if coord is not None and coord.is_open(): # Closes the communications to the coordinator when the program closes
