@@ -60,8 +60,8 @@ def main():
                     if router2 is not None:
                         coord.send_data(router2, dataToSend)
 
-                    #text = "<{0}> T{1}{2} P{3}{4} H{5}{6}\n".format(timestamp, data[0], stateT, data[1], stateP, data[2], stateH)
-                    #myFile.append(text)
+                    text = "<{0}> T{1}{2} P{3}{4} H{5}{6}\n".format(timestamp, stateT, data[0], stateP, data[1], stateH, data[2])
+                    myFile.write(text)
     finally:
         if coord is not None and coord.is_open(): # Closes the communications to the coordinator when the program closes
             coord.close()
