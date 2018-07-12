@@ -25,7 +25,7 @@ def main():
 
         timestamp, date, time_ = getTime()
         with open(".\\logs\\log {0} {1}.txt".format(date, time_), mode="a") as myFile: # Creates a new log file
-            myFile.write("# Timestamp\tDate\t\tTime\t\tTemperature\tPressure\tHumidity\n")
+            myFile.write("# Date\t\tTime\t\tTimestamp\tTemperature\tHumidity\n")
             while True:
                 xbee_message = coord.read_data() # Read the data from R1 on the Sensor Arduino
                 if xbee_message is not None:
@@ -70,7 +70,7 @@ def main():
                     if router2 is not None:
                         coord.send_data(router2, dataToSend)
 
-                    text = "{0}\t{1}\t{2}\t{3}{4}\t\t{5}{6}\n".format(timestamp, date, time_, stateT, data[0], stateH, data[2])
+                    text = "{0}\t{1}\t{2}\t{3}{4}\t\t{5}{6}\n".format(date, time_, timestamp, stateT, data[0], stateH, data[2])
                     myFile.write(text)
     finally:
         if coord is not None and coord.is_open(): # Closes the communications to the coordinator when the program closes
