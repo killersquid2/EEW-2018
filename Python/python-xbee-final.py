@@ -15,45 +15,58 @@ def main():
         else :
             print("Remote device found")
 
-        while True:
-            xbee_message = coord.read_data() # Read the data from R1 on the Sensor Arduino
-            if xbee_message is not None:
-                timestamp = round(time.time()) # Get the timestamp
-                data_raw = xbee_message.data.decode().split(",") # Turn the sensor data into a list
-                data = [float(element) for element in data_raw] # Turn each element of data_raw into a float
+        with open("log.txt", mode="a") as myFile: # Opens the log file
+            while True:
+                xbee_message = coord.read_data() # Read the data from R1 on the Sensor Arduino
+                if xbee_message is not None:
+                    timestamp = round(time.time()) # Get the timestamp
+                    data_raw = xbee_message.data.decode().split(",") # Turn the sensor data into a list
+                    data = [float(element) for element in data_raw] # Turn each element of data_raw into a float
+                    dataToSend = ""
 
-                # Temperature
-                print("\nAt {0} Temperature is {1}".format(timestamp, data[0]), end=": ")
-                if data[0] > 24.65:
-                    print("Unsafe")
-                    if router2 is not None:
-                        coord.send_data(router2, "T1")
-                else:
-                    print("Safe")
-                    if router2 is not None:
-                        coord.send_data(router2, "T0")
+                    # Temperature
+                    print("\nAt {0} Temperature is {1}".format(timestamp, data[0]), end=": ")
+                    if data[0] > 24.65:
+                        print("Unsafe")
+                        if router2 is not None:
+                            dataToSend += "T1"
+                            stateT = "U"
+                    else:
+                        print("Safe")
+                        if router2 is not None:
+                            dataToSend += "T0"
+                            stateT = "S"
 
-                # Pressure
-                print("At {0} Pressure is {1}".format(timestamp, data[1]), end=": ")
-                if data[1] > 1000:
-                    print("Unsafe")
-                    if router2 is not None:
-                        coord.send_data(router2, "P1")
-                else:
-                    print("Safe")
-                    if router2 is not None:
-                        coord.send_data(router2, "P0")
-                
-                # Humidity
-                print("At {0} Humidity is {1}".format(timestamp, data[2]), end=": ")
-                if data[2] > 90:
-                    print("Unsafe")
-                    if router2 is not None:
-                        coord.send_data(router2, "H1")
-                else:
-                    print("Safe")
-                    if router2 is not None:
-                        coord.send_data(router2, "H0")
+                    # Pressure
+                    print("At {0} Pressure is {1}".format(timestamp, data[1]), end=": ")
+                    if data[1] > 1000:
+                        print("Unsafe")
+                        if router2 is not None:
+                            dataToSend += "P1"
+                            stateP = "U"
+                    else:
+                        print("Safe")
+                        if router2 is not None:
+                            dataToSend += "P0"
+                            stateP = "S"
+                    
+                    # Humidity
+                    print("At {0} Humidity is {1}".format(timestamp, data[2]), end=": ")
+                    if data[2] > 70:
+                        print("Unsafe")
+                        if router2 is not None:
+                            dataToSend += "H1"
+                            stateH = "U"
+                    else:
+                        print("Safe")
+                        if router2 is not None:
+                            stateH = "S"
+                            dataToSend += "H0"
+                    
+                    coord.send_data(router2, dataToSend)
+
+                    #text = "<{0}> T{1}{2} P{3}{4} H{5}{6}\n".format(timestamp, data[0], stateT, data[1], stateP, data[2], stateH)
+                    #myFile.append(text)
     finally:
         if coord is not None and coord.is_open(): # Closes the communications to the coordinator when the program closes
             coord.close()

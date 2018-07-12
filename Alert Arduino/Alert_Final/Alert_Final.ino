@@ -17,8 +17,8 @@ int LedSafeH = 6; // Green LED for Humidity
 
 int Buzzer = 10; // Buzzer
 
-bool SafeT; // Whether Temperature at Safe Levels
-bool SafeH; // Whether Humidity at Safe Levels
+bool SafeT = true; // Whether Temperature at Safe Levels
+bool SafeH = true; // Whether Humidity at Safe Levels
 
 
 void setup()
@@ -46,18 +46,16 @@ void loop()
     {
       xbee.getResponse().getZBRxResponse(rx);
       
-      if (rx.getData(0) == 'T')
+      if (rx.getData(0) == 'T' and rx.getData(2) == 'P' and rx.getData(4) == 'H')
       {
         if (rx.getData(1) == '0')
         { SafeT = true; }
-        if (rx.getData(1) == '1')
+        else if (rx.getData(1) == '1')
         { SafeT = false; }
-      }
-      else if (rx.getData(0) == 'H')
-      {
-        if (rx.getData(1) == '0')
+        
+        if (rx.getData(5) == '0')
         { SafeH = true; }
-        if (rx.getData(1) == '1')
+        else if (rx.getData(5) == '1')
         { SafeH = false; }
       }
     }
