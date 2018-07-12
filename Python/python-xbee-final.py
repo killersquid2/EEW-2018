@@ -1,5 +1,13 @@
 import time
+import datetime
 from digi.xbee.devices import XBeeDevice
+
+def getTime():
+    timestamp = time.time()
+    timeStruct = datetime.datetime.fromtimestamp(timestamp)
+    date = timeStruct.strftime("%d-%m-%Y")
+    time_ = timeStruct.strftime("%H-%M-%S")
+    return (round(timestamp), date, time_)
 
 def main():
     coord = XBeeDevice('COM7', 9600) # Create XBeeDevice object for the coordinator at COM7 with Baud Rate 9600 
@@ -15,17 +23,19 @@ def main():
         else :
             print("Remote alert device (R2) found")
 
-        with open("log.txt", mode="a") as myFile: # Opens the log file
+        timestamp, date, time_ = getTime()
+        with open(".\\logs\\log {0} {1}.txt".format(date, time_), mode="a") as myFile: # Creates a new log file
+            myFile.write("# Timestamp\tDate\t\tTime\t\tTemperature\tPressure\tHumidity\n")
             while True:
                 xbee_message = coord.read_data() # Read the data from R1 on the Sensor Arduino
                 if xbee_message is not None:
-                    timestamp = round(time.time()) # Get the timestamp
+                    timestamp, date, time_ = getTime() # Get the time
                     data_raw = xbee_message.data.decode().split(",") # Turn the sensor data into a list
                     data = [float(element) for element in data_raw] # Turn each element of data_raw into a float
                     dataToSend = ""
 
                     # Temperature
-                    print("\nAt {0} Temperature is {1}".format(timestamp, data[0]), end=": ")
+                    print("\nAt {0} {1} Temperature is {1}".format(date, time_, data[0]), end=": ")
                     if data[0] > 24.65:
                         print("Unsafe")
                         dataToSend += "T1"
@@ -36,7 +46,7 @@ def main():
                         stateT = "S"
 
                     # Pressure
-                    print("At {0} Pressure is {1}".format(timestamp, data[1]), end=": ")
+                    print("At {0} {1} Pressure is {1}".format(date, time_, data[1]), end=": ")
                     if data[1] > 1000:
                         print("Unsafe")
                         dataToSend += "P1"
@@ -47,7 +57,7 @@ def main():
                         stateP = "S"
                     
                     # Humidity
-                    print("At {0} Humidity is {1}".format(timestamp, data[2]), end=": ")
+                    print("At {0} {1} Humidity is {2}".format(date, time_, data[2]), end=": ")
                     if data[2] > 70:
                         print("Unsafe")
                         dataToSend += "H1"
@@ -60,7 +70,7 @@ def main():
                     if router2 is not None:
                         coord.send_data(router2, dataToSend)
 
-                    text = "<{0}>\tT{1}{2}\tP{3}{4}\tH{5}{6}\n".format(timestamp, stateT, data[0], stateP, data[1], stateH, data[2])
+                    text = "{0}\t{1}\t{2}\t{3}{4}\t\t{5}{6}\t{7}{8}\n".format(timestamp, date, time_, stateT, data[0], stateP, data[1], stateH, data[2])
                     myFile.write(text)
     finally:
         if coord is not None and coord.is_open(): # Closes the communications to the coordinator when the program closes
