@@ -11,9 +11,9 @@ def main():
         router2 = xbee_network.discover_device('R2') # Find the remote device on the network with ID 'R2'
 
         if router2 is None: # If we could not find R2 then the program will continue to run
-            print("Could not find the remote device")
+            print("Could not find the remote alert device (R2)")
         else :
-            print("Remote device found")
+            print("Remote alert device (R2) found")
 
         with open("log.txt", mode="a") as myFile: # Opens the log file
             while True:
