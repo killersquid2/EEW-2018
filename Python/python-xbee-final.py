@@ -2,11 +2,14 @@ import time
 import datetime
 from digi.xbee.devices import XBeeDevice
 
-def getTime():
+def getTime(filename = False):
     timestamp = time.time()
     timeStruct = datetime.datetime.fromtimestamp(timestamp)
     date = timeStruct.strftime("%d-%m-%Y")
-    time_ = timeStruct.strftime("%H-%M-%S")
+    if filename:
+        time_ = timeStruct.strftime("%H-%M-%S")
+    else:
+        time_ = timeStruct.strftime("%H:%M:%S")
     return (round(timestamp), date, time_)
 
 def main():
@@ -23,8 +26,8 @@ def main():
         else :
             print("Remote alert device (R2) found")
 
-        timestamp, date, time_ = getTime()
-        with open(".\\logs\\log {0} {1}.txt".format(date, time_), mode="a") as myFile: # Creates a new log file
+        timestamp, date, time_ = getTime(True)
+        with open(".\\logs\\{0}-{1}.txt".format(date, time_), mode="a") as myFile: # Creates a new log file
             myFile.write("# Date\t\tTime\t\tTimestamp\tTemperature\tHumidity\n")
             while True:
                 xbee_message = coord.read_data() # Read the data from R1 on the Sensor Arduino
