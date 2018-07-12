@@ -28,42 +28,37 @@ def main():
                     print("\nAt {0} Temperature is {1}".format(timestamp, data[0]), end=": ")
                     if data[0] > 24.65:
                         print("Unsafe")
-                        if router2 is not None:
-                            dataToSend += "T1"
-                            stateT = "U"
+                        dataToSend += "T1"
+                        stateT = "U"
                     else:
                         print("Safe")
-                        if router2 is not None:
-                            dataToSend += "T0"
-                            stateT = "S"
+                        dataToSend += "T0"
+                        stateT = "S"
 
                     # Pressure
                     print("At {0} Pressure is {1}".format(timestamp, data[1]), end=": ")
                     if data[1] > 1000:
                         print("Unsafe")
-                        if router2 is not None:
-                            dataToSend += "P1"
-                            stateP = "U"
+                        dataToSend += "P1"
+                        stateP = "U"
                     else:
                         print("Safe")
-                        if router2 is not None:
-                            dataToSend += "P0"
-                            stateP = "S"
+                        dataToSend += "P0"
+                        stateP = "S"
                     
                     # Humidity
                     print("At {0} Humidity is {1}".format(timestamp, data[2]), end=": ")
                     if data[2] > 70:
                         print("Unsafe")
-                        if router2 is not None:
-                            dataToSend += "H1"
-                            stateH = "U"
+                        dataToSend += "H1"
+                        stateH = "U"
                     else:
                         print("Safe")
-                        if router2 is not None:
-                            stateH = "S"
-                            dataToSend += "H0"
+                        stateH = "S"
+                        dataToSend += "H0"
                     
-                    coord.send_data(router2, dataToSend)
+                    if router2 is not None:
+                        coord.send_data(router2, dataToSend)
 
                     #text = "<{0}> T{1}{2} P{3}{4} H{5}{6}\n".format(timestamp, data[0], stateT, data[1], stateP, data[2], stateH)
                     #myFile.append(text)
