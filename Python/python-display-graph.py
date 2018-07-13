@@ -1,5 +1,24 @@
 import matplotlib.pyplot as plt
 
+def getGraphInfo():
+    finished = False
+    while not finished:
+        try:
+            filename = input("Please enter filename of log file: ")
+            with open("logs\\{0}".format(filename), mode="r") as myFile:
+                finished = True
+        except:
+            print("Invalid File Name.")
+    finished = False
+    while not finished:
+        try:
+            datatype = input("Would you like a graph of temperature of humidity (T/H): ").lower()
+            if datatype in ("t", "h"):
+                finished = True
+        except:
+            print("Invalid Data Type.")
+    return (filename, datatype)
+
 def readFile(filename):
     data = []
     with open(filename, mode="r") as myFile:
@@ -16,21 +35,25 @@ def getDataLists(data):
     humidity = []
     for elements in data:
         time.append(elements[1])
-        temperature.append(elements[3][1:])
-        humidity.append(elements[5][1:])
+        temperature.append(float(elements[3][1:]))
+        humidity.append(float(elements[5][1:]))
     return (time, temperature, humidity)
 
-def drawGraph(x, y1, y2):   
-    plt.plot(x, y1, "r--", x, y2, "b--")
-    print(y2)
+def drawGraph(x, y, dataName):   
+    plt.plot(x, y, "b--")
+    plt.xticks(rotation=90)
+    plt.xlabel("Time")
+    plt.ylabel(dataName)
     plt.show()
 
 def main():
-    data = readFile("logs\\13-07-2018-10-40-53.log")
+    filename, datatype = getGraphInfo()
+    data = readFile("logs\\{0}".format(filename))
     times, temps, hums = getDataLists(data)
-    print(hums)
-    drawGraph(times, temps, hums)
-
+    if datatype == "t":
+        drawGraph(times, temps, "Temperature")
+    else:
+        drawGraph(times, hums, "Humidity")
 
 if __name__ == "__main__":
     main()
