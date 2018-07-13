@@ -27,7 +27,7 @@ def main():
             print("Remote alert device (R2) found")
 
         timestamp, date, time_ = getTime(True)
-        with open(".\\logs\\{0}-{1}.txt".format(date, time_), mode="a") as myFile: # Creates a new log file
+        with open(".\\logs\\{0}-{1}.log".format(date, time_), mode="a") as myFile: # Creates a new log file
             myFile.write("# Date\t\tTime\t\tTimestamp\tTemperature\tHumidity\n")
             while True:
                 xbee_message = coord.read_data() # Read the data from R1 on the Sensor Arduino
